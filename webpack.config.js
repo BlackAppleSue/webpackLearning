@@ -2,6 +2,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+    watch: true,
+    devtool: 'inline-source-map',
     entry: {
         app: ['./src/index.js', './src/a.js', './src/b.js']
     },
@@ -25,7 +27,13 @@ module.exports = {
             },{
                 test:/\.(png|svg|jpg|gif)$/,
                 use:[
-                    'file-loader'
+                    {
+                        loader:'file-loader',
+                        options:{
+                            outputPath:'images/',
+                            publicPath:'dist/'
+                        }
+                    }
                 ]
             }
         ]
