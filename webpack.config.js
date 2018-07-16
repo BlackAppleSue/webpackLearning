@@ -1,16 +1,19 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+const { VueLoaderPlugin } = require('vue-loader');
 module.exports = {
     watch: true,
     devtool: 'inline-source-map',
     entry: {
-        app: ['./src/index.js', './src/a.js', './src/b.js']
+        app: ["babel-polyfill", './src/index.js', './src/a.js', './src/b.js', './src/test.ts']
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'ab'
-        })
+            title: 'ab',
+            template: 'index.html',
+            inject: true
+        }),
+        new VueLoaderPlugin()
     ],
     output: {
         filename: '[name].js',
@@ -19,23 +22,48 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.vue$/,
+                use: {
+                    loader: 'vue-loader'
+                }
+            }
+            ,
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
+                }
+            }
+            , {
                 test: /\.css$/,
                 use: [
+                    'vue-style-loader',
                     'style-loader',
                     'css-loader'
                 ]
-            },{
-                test:/\.(png|svg|jpg|gif)$/,
-                use:[
+            }, {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
                     {
-                        loader:'file-loader',
-                        options:{
-                            outputPath:'images/',
-                            publicPath:'dist/'
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: 'images/',
+                            publicPath: 'dist/'
                         }
                     }
                 ]
+            }, {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
             }
         ]
+    },
+    resolve: {
+        extensions: ['.vue', '.tsx', '.ts', '.js'],
+        alias: {
+            vue: 'vue/dist/vue.js'
+        }
     }
 }
